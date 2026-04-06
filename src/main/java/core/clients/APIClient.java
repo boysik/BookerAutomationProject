@@ -31,6 +31,7 @@ public class APIClient {
         }
         return properties.getProperty("baseUrl");
     }
+
     //Настройка базовых параметров HTTP-запроса
     private RequestSpecification getRequestSpec() {
         return RestAssured.given()
@@ -44,7 +45,7 @@ public class APIClient {
                 .when()
                 .get(ApiEndpoints.PING.getPath())
                 .then()
-                .statusCode(201) // Ожидаемый статус-код 201 Created
+                .statusCode(201)
                 .extract()
                 .response();
     }
@@ -54,9 +55,18 @@ public class APIClient {
                 .when()
                 .get(ApiEndpoints.BOOKING.getPath())
                 .then()
-                .statusCode(200) // Ожидаемый статус-код 201 Created
+                .statusCode(200)
                 .extract()
                 .response();
     }
 
+    public Response getBookingById() {
+        return getRequestSpec()
+                .when()
+                .get(ApiEndpoints.BOOKINGBYID.getPath())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+    }
 }
