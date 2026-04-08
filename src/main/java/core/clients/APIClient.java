@@ -87,13 +87,24 @@ public class APIClient {
                 .response();
     }
 
+    public Response getBookingAfterDeleteById(int bookingId) {
+        return getRequestSpec()
+                .pathParam("id",bookingId)
+                .when()
+                .get(ApiEndpoints.BOOKING.getPath() + "/{id}")
+                .then()
+                .statusCode(404)
+                .extract()
+                .response();
+    }
+
     public Response getBookingById(int bookingId) {
         return getRequestSpec()
                 .pathParam("id",bookingId)
                 .when()
                 .get(ApiEndpoints.BOOKING.getPath() + "/{id}")
                 .then()
-                .statusCode(200)
+                .statusCode(404)
                 .extract()
                 .response();
     }
