@@ -89,7 +89,7 @@ public class APIClient {
 
     public Response getBookingAfterDeleteById(int bookingId) {
         return getRequestSpec()
-                .pathParam("id",bookingId)
+                .pathParam("id", bookingId)
                 .when()
                 .get(ApiEndpoints.BOOKING.getPath() + "/{id}")
                 .then()
@@ -100,18 +100,18 @@ public class APIClient {
 
     public Response getBookingById(int bookingId) {
         return getRequestSpec()
-                .pathParam("id",bookingId)
+                .pathParam("id", bookingId)
                 .when()
                 .get(ApiEndpoints.BOOKING.getPath() + "/{id}")
                 .then()
-                .statusCode(404)
+                .statusCode(200)
                 .extract()
                 .response();
     }
 
     public Response deleteBooking(int bookingId) {
         return getRequestSpec()
-                .pathParam("id",bookingId)
+                .pathParam("id", bookingId)
                 .when()
                 .delete(ApiEndpoints.BOOKING.getPath() + "/{id}")
                 .then()
@@ -120,11 +120,25 @@ public class APIClient {
                 .extract()
                 .response();
     }
+
     public Response createBooking(String createBooking) {
         return getRequestSpec()
                 .body(createBooking)
                 .when()
                 .post(ApiEndpoints.BOOKING.getPath())
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract()
+                .response();
+    }
+
+    public Response changeBooking(String changeBooking, int bookingId) {
+        return getRequestSpec()
+                .pathParam("id", bookingId)
+                .body(changeBooking)
+                .when()
+                .put(ApiEndpoints.BOOKING.getPath() + "/{id}")
                 .then()
                 .log().all()
                 .statusCode(200)

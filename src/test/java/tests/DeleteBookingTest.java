@@ -50,6 +50,4 @@ public class DeleteBookingTest {
         Response getDeletedBooking = apiClient.getBookingAfterDeleteById(bookingExactId);
         assertThat(getDeletedBooking.getStatusCode()).isEqualTo(404);
     }
-
-
 }
