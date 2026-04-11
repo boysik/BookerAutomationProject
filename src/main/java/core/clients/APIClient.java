@@ -120,6 +120,15 @@ public class APIClient {
                 .extract()
                 .response();
     }
-
-
+    public Response createBooking(String createBooking) {
+        return getRequestSpec()
+                .body(createBooking)
+                .when()
+                .post(ApiEndpoints.BOOKING.getPath())
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract()
+                .response();
+    }
 }

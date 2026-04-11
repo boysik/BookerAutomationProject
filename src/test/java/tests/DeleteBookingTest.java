@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DeleteBooking {
+public class DeleteBookingTest {
     private APIClient apiClient;
     private ObjectMapper objectMapper;
 
