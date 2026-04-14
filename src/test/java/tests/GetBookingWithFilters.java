@@ -3,7 +3,6 @@ package tests;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import core.clients.APIClient;
-import core.models.Booking;
 import core.models.BookingById;
 import core.models.BookingDates;
 import core.models.CreateNewBooking;
@@ -11,8 +10,6 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,14 +17,12 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GetBookingWithFilters {
     private APIClient apiClient;
     private ObjectMapper objectMapper;
     private CreateNewBooking createNewBooking;
     private BookingById booking;
-    private BookingById updatedBooking;
 
     List<Integer> bookingIds = new ArrayList<>();
 
@@ -65,21 +60,35 @@ public class GetBookingWithFilters {
     }
 
     @Test
-    public void testGetBooking() throws Exception {
+    public void testGetBookingWithFilters() throws Exception {
 
-        Response response = apiClient.getBookingWithFilters();
-        assertThat(response.getStatusCode()).isEqualTo(200);
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("firstname", "John");
+        filters.put("lastname", "Doe");
 
+       Response response = apiClient.getBookingWithFilters(filters);
+       assertThat(response.getStatusCode()).isEqualTo(200);
 
-        for (Booking booking : bookings) {
-            assertThat(booking.getBookingId()).isGreaterThan(0);
-        }
+        filters.clear();
+        filters.put("firstname", "Sally");
+
+        Response response2 = apiClient.getBookingWithFilters(filters);
+        assertThat(response2.getStatusCode()).isEqualTo(200);
+
+        filters.clear();
+        filters.put("checkin", "2026-04-15");
+        filters.put("checkout", "2026-04-21");
+
+        Response response3 = apiClient.getBookingWithFilters(filters);
+        assertThat(response3.getStatusCode()).isEqualTo(200);
+
     }
     @AfterEach
     public void tearDown() {
         apiClient.createToken("admin","password123");
-        apiClient.deleteBooking(createNewBooking.getBookingid());
-
-        assertThat(apiClient.getBookingAfterDeleteById(createNewBooking.getBookingid()).getStatusCode()).isEqualTo(404);
+        for (Integer bookingId : bookingIds) {
+            apiClient.deleteBooking(bookingId);
+            assertThat(apiClient.getBookingAfterDeleteById(bookingId).getStatusCode()).isEqualTo(404);
+        }
     }
 }
