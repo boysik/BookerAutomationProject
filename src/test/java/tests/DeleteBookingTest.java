@@ -42,7 +42,7 @@ public class DeleteBookingTest {
         assertThat(bookings).isNotEmpty();
 
         //Получаем рандомный id по размеру ответ
-        int bookingExactId = getRandomNumber(bookings.size());
+        int bookingExactId = getRandomNumber(bookings.size() -1);
 
         Response response = apiClient.deleteBooking(bookingExactId);
         assertThat(response.getStatusCode()).isEqualTo(201);
