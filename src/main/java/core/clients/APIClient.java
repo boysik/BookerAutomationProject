@@ -11,6 +11,7 @@ import io.restassured.specification.RequestSpecification;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
 
 public class APIClient {
@@ -87,6 +88,21 @@ public class APIClient {
                 .response();
     }
 
+    public Response getBookingWithFilters(Map<String, Object> filters) {
+        RequestSpecification request = getRequestSpec();
+
+        if (filters != null && !filters.isEmpty()) {
+            request.queryParams(filters);
+        }
+        return request
+                .when()
+                .get(ApiEndpoints.BOOKING.getPath())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+    }
+
     public Response getBookingAfterDeleteById(int bookingId) {
         return getRequestSpec()
                 .pathParam("id", bookingId)
@@ -139,6 +155,19 @@ public class APIClient {
                 .body(changeBooking)
                 .when()
                 .put(ApiEndpoints.BOOKING.getPath() + "/{id}")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract()
+                .response();
+    }
+
+    public Response patchBooking(String patchBooking, int bookingId) {
+        return getRequestSpec()
+                .pathParam("id", bookingId)
+                .body(patchBooking)
+                .when()
+                .patch(ApiEndpoints.BOOKING.getPath() + "/{id}")
                 .then()
                 .log().all()
                 .statusCode(200)
