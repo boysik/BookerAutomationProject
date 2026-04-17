@@ -1,14 +1,9 @@
 plugins{
     id 'java'
-    id 'io.qameta.allure' version '2.11.2'
 }
 
 repositories {
     mavenCentral()
-}
-
-allure {
-    version = '2.24.0'
 }
 
 dependencies {
@@ -20,18 +15,24 @@ dependencies {
     implementation 'io.rest-assured:rest-assured:5.3.2'
 
     // Allure
-    testImplementation 'io.qameta.allure:allure-junit5:2.24.0'
-    testImplementation 'io.qameta.allure:allure-rest-assured:2.24.0'
+    implementation 'io.qameta.allure:allure-junit5:2.24.0'
+    implementation 'io.qameta.allure:allure-rest-assured:2.24.0'
 
     // Jackson for JSON processing
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
 
+//    implementation group: 'io.qameta.allure', name: 'allure-junit5', version: '2.29.0'
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
     testImplementation 'org.assertj:assertj-core:3.24.2'
 
-    implementation 'ch.qos.logback:logback-classic:1.2.11'
+    implementation 'ch.qos.logback:logback-classic:1.4.14'
 }
 
 test{
     useJUnitPlatform()
+
+    systemProperty "allure.results.directory", "build/allure-results"
 }

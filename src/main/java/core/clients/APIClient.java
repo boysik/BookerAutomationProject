@@ -1,6 +1,7 @@
 package core.clients;
 
 import core.settings.ApiEndpoints;
+import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.filter.Filter;
 import io.restassured.filter.FilterContext;
@@ -139,6 +140,7 @@ public class APIClient {
 
     public Response createBooking(String createBooking) {
         return getRequestSpec()
+                .filter(new AllureRestAssured())
                 .body(createBooking)
                 .when()
                 .post(ApiEndpoints.BOOKING.getPath())
