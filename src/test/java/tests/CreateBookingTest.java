@@ -6,6 +6,7 @@ import core.clients.APIClient;
 import core.models.BookingById;
 import core.models.BookingDates;
 import core.models.CreateNewBooking;
+import io.qameta.allure.Allure;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,10 +38,12 @@ public class CreateBookingTest {
         booking.setAdditionalneeds("Towels");
     }
 
+
+
     @Test
     public void testCreateBooking() throws Exception {
         //Делаем запрос и записываем в переменную ответ
-        step("Проверка создания Booking", () -> {
+       Allure.step("Проверка создания Booking", () -> {
 
             String requestBody = objectMapper.writeValueAsString(booking);
             Response response = apiClient.createBooking(requestBody);
