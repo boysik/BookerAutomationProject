@@ -5,28 +5,15 @@ public class BookingById {
     public String lastname;
     public int totalprice;
     public boolean depositpaid;
-    public Bookingdates bookingdates;
+    public BookingDates bookingdates;
     public String additionalneeds;
 
-    public class Bookingdates{
-        public String checkin;
-        public String checkout;
+    public BookingDates getBookingdates() {
+        return bookingdates;
+    }
 
-        public String getCheckin() {
-            return checkin;
-        }
-
-        public void setCheckin(String checkin) {
-            this.checkin = checkin;
-        }
-
-        public String getCheckout() {
-            return checkout;
-        }
-
-        public void setCheckout(String checkout) {
-            this.checkout = checkout;
-        }
+    public void setBookingdates(BookingDates bookingdates) {
+        this.bookingdates = bookingdates;
     }
 
     public String getFirstname() {
@@ -59,14 +46,6 @@ public class BookingById {
 
     public void setDepositpaid(boolean depositpaid) {
         this.depositpaid = depositpaid;
-    }
-
-    public Bookingdates getBookingdates() {
-        return bookingdates;
-    }
-
-    public void setBookingdates(Bookingdates bookingdates) {
-        this.bookingdates = bookingdates;
     }
 
     public String getAdditionalneeds() {

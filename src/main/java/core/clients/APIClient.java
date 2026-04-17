@@ -1,6 +1,7 @@
 package core.clients;
 
 import core.settings.ApiEndpoints;
+import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.filter.Filter;
 import io.restassured.filter.FilterContext;
@@ -11,6 +12,7 @@ import io.restassured.specification.RequestSpecification;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
 
 public class APIClient {
@@ -87,9 +89,24 @@ public class APIClient {
                 .response();
     }
 
+    public Response getBookingWithFilters(Map<String, Object> filters) {
+        RequestSpecification request = getRequestSpec();
+
+        if (filters != null && !filters.isEmpty()) {
+            request.queryParams(filters);
+        }
+        return request
+                .when()
+                .get(ApiEndpoints.BOOKING.getPath())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+    }
+
     public Response getBookingAfterDeleteById(int bookingId) {
         return getRequestSpec()
-                .pathParam("id",bookingId)
+                .pathParam("id", bookingId)
                 .when()
                 .get(ApiEndpoints.BOOKING.getPath() + "/{id}")
                 .then()
@@ -100,18 +117,18 @@ public class APIClient {
 
     public Response getBookingById(int bookingId) {
         return getRequestSpec()
-                .pathParam("id",bookingId)
+                .pathParam("id", bookingId)
                 .when()
                 .get(ApiEndpoints.BOOKING.getPath() + "/{id}")
                 .then()
-                .statusCode(404)
+                .statusCode(200)
                 .extract()
                 .response();
     }
 
     public Response deleteBooking(int bookingId) {
         return getRequestSpec()
-                .pathParam("id",bookingId)
+                .pathParam("id", bookingId)
                 .when()
                 .delete(ApiEndpoints.BOOKING.getPath() + "/{id}")
                 .then()
@@ -121,5 +138,42 @@ public class APIClient {
                 .response();
     }
 
+    public Response createBooking(String createBooking) {
+        return getRequestSpec()
+                .filter(new AllureRestAssured())
+                .body(createBooking)
+                .when()
+                .post(ApiEndpoints.BOOKING.getPath())
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract()
+                .response();
+    }
 
+    public Response changeBooking(String changeBooking, int bookingId) {
+        return getRequestSpec()
+                .pathParam("id", bookingId)
+                .body(changeBooking)
+                .when()
+                .put(ApiEndpoints.BOOKING.getPath() + "/{id}")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract()
+                .response();
+    }
+
+    public Response patchBooking(String patchBooking, int bookingId) {
+        return getRequestSpec()
+                .pathParam("id", bookingId)
+                .body(patchBooking)
+                .when()
+                .patch(ApiEndpoints.BOOKING.getPath() + "/{id}")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract()
+                .response();
+    }
 }

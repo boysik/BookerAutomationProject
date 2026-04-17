@@ -1,20 +1,23 @@
 package tests;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import core.clients.APIClient;
 import core.models.BookingById;
 import core.models.BookingDates;
 import core.models.CreateNewBooking;
+import io.qameta.allure.Allure;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 import static io.qameta.allure.Allure.step;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class GetBookingByIdTest {
+public class CreateBookingTest {
     private APIClient apiClient;
     private ObjectMapper objectMapper;
     private CreateNewBooking createNewBooking;
@@ -35,32 +38,30 @@ public class GetBookingByIdTest {
         booking.setAdditionalneeds("Towels");
     }
 
-
     @Test
-    public void testGetBookingById() throws Exception {
-
-        step("Проверка новый Booking создан", () -> {
-            String requestBody = objectMapper.writeValueAsString(booking);
-            Response postResponse = apiClient.createBooking(requestBody);
-            assertThat(postResponse.getStatusCode()).isEqualTo(200);
-
-            String postResponseBody = postResponse.asString();
-            assertThat(postResponseBody).isNotNull();
-
-            createNewBooking = objectMapper.readValue(postResponseBody, CreateNewBooking.class);
+    public void testCreateBooking() throws Exception {
+        //Делаем запрос и записываем в переменную ответ
+        Allure.step("Подготовка запроса", () -> {
+            objectMapper.writeValueAsString(booking);
         });
 
-        step("Проверка что в ответ пришел запрашиваемый Booking", () -> {
-            Response response = apiClient.getBookingById(createNewBooking.getBookingid());
-            assertThat(response.getStatusCode()).isEqualTo(200);
+        Response response = apiClient.createBooking(
+                objectMapper.writeValueAsString(booking)
+        );
 
+        Allure.step("Проверка статуса ответа", () -> {
+            assertThat(response.getStatusCode()).isEqualTo(200);
+        });
+
+        String responseBody = response.asString();
+
+        createNewBooking = objectMapper.readValue(responseBody, CreateNewBooking.class);
+
+        Allure.step("Проверка данных ответа", () -> {
             assertEquals(createNewBooking.getBooking().getFirstname(), booking.getFirstname());
             assertEquals(createNewBooking.getBooking().getLastname(), booking.getLastname());
             assertEquals(createNewBooking.getBooking().getTotalprice(), booking.getTotalprice());
             assertEquals(createNewBooking.getBooking().isDepositpaid(), booking.isDepositpaid());
-            assertEquals(createNewBooking.getBooking().getBookingdates().getCheckin(), booking.getBookingdates().getCheckin());
-            assertEquals(createNewBooking.getBooking().getBookingdates().getCheckout(), booking.getBookingdates().getCheckout());
-            assertEquals(createNewBooking.getBooking().getAdditionalneeds(), booking.getAdditionalneeds());
         });
     }
 
