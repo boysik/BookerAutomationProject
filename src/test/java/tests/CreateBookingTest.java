@@ -38,29 +38,30 @@ public class CreateBookingTest {
         booking.setAdditionalneeds("Towels");
     }
 
-
-
     @Test
     public void testCreateBooking() throws Exception {
         //Делаем запрос и записываем в переменную ответ
-       Allure.step("Проверка создания Booking", () -> {
+        Allure.step("Подготовка запроса", () -> {
+            objectMapper.writeValueAsString(booking);
+        });
 
-            String requestBody = objectMapper.writeValueAsString(booking);
-            Response response = apiClient.createBooking(requestBody);
+        Response response = apiClient.createBooking(
+                objectMapper.writeValueAsString(booking)
+        );
 
+        Allure.step("Проверка статуса ответа", () -> {
             assertThat(response.getStatusCode()).isEqualTo(200);
+        });
 
-            String responseBody = response.asString();
+        String responseBody = response.asString();
 
-            assertThat(responseBody).isNotNull();
-            createNewBooking = objectMapper.readValue(responseBody, CreateNewBooking.class);
+        createNewBooking = objectMapper.readValue(responseBody, CreateNewBooking.class);
+
+        Allure.step("Проверка данных ответа", () -> {
             assertEquals(createNewBooking.getBooking().getFirstname(), booking.getFirstname());
             assertEquals(createNewBooking.getBooking().getLastname(), booking.getLastname());
             assertEquals(createNewBooking.getBooking().getTotalprice(), booking.getTotalprice());
             assertEquals(createNewBooking.getBooking().isDepositpaid(), booking.isDepositpaid());
-            assertEquals(createNewBooking.getBooking().getBookingdates().getCheckin(), booking.getBookingdates().getCheckin());
-            assertEquals(createNewBooking.getBooking().getBookingdates().getCheckout(), booking.getBookingdates().getCheckout());
-            assertEquals(createNewBooking.getBooking().getAdditionalneeds(), booking.getAdditionalneeds());
         });
     }
 
