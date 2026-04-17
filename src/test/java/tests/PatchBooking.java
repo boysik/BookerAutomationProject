@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static io.qameta.allure.Allure.step;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -38,30 +39,33 @@ public class PatchBooking {
 
     @Test
     public void testChangeBooking() throws Exception {
-        //Делаем запрос и записываем в переменную ответ
-        String requestBody = objectMapper.writeValueAsString(booking);
-        Response response = apiClient.createBooking(requestBody);
+        step("Создание нового Booking", () -> {
 
-        assertThat(response.getStatusCode()).isEqualTo(200);
+            String requestBody = objectMapper.writeValueAsString(booking);
+            Response response = apiClient.createBooking(requestBody);
 
-        String responseBody = response.asString();
-        assertThat(responseBody).isNotNull();
-        createNewBooking = objectMapper.readValue(responseBody, CreateNewBooking.class);
+            assertThat(response.getStatusCode()).isEqualTo(200);
 
-        booking.setFirstname("Ellie");
-        booking.setLastname("Gray");
+            String responseBody = response.asString();
+            assertThat(responseBody).isNotNull();
+            createNewBooking = objectMapper.readValue(responseBody, CreateNewBooking.class);
+        });
 
-        String putRequestBody = objectMapper.writeValueAsString(booking);
-        Response patchResponse = apiClient.patchBooking(putRequestBody, createNewBooking.getBookingid());
+        step("Частичное изменение Booking", () -> {
+            booking.setFirstname("Ellie");
+            booking.setLastname("Gray");
 
-        assertThat(patchResponse.getStatusCode()).isEqualTo(200);
+            String putRequestBody = objectMapper.writeValueAsString(booking);
+            Response patchResponse = apiClient.patchBooking(putRequestBody, createNewBooking.getBookingid());
 
-        String putResponseBody = patchResponse.asString();
-        assertThat(putResponseBody).isNotNull();
-        updatedBooking = objectMapper.readValue(putResponseBody, BookingById.class);
+            assertThat(patchResponse.getStatusCode()).isEqualTo(200);
 
-        assertEquals(updatedBooking.getTotalprice(), booking.getTotalprice());
+            String putResponseBody = patchResponse.asString();
+            assertThat(putResponseBody).isNotNull();
+            updatedBooking = objectMapper.readValue(putResponseBody, BookingById.class);
 
+            assertEquals(updatedBooking.getTotalprice(), booking.getTotalprice());
+        });
     }
 
     @AfterEach

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
+import static io.qameta.allure.Allure.step;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -39,27 +40,30 @@ public class CreateBookingTest {
     @Test
     public void testCreateBooking() throws Exception {
         //Делаем запрос и записываем в переменную ответ
-        String requestBody = objectMapper.writeValueAsString(booking);
-        Response response = apiClient.createBooking(requestBody);
+        step("Проверка создания Booking", () -> {
 
-        assertThat(response.getStatusCode()).isEqualTo(200);
+            String requestBody = objectMapper.writeValueAsString(booking);
+            Response response = apiClient.createBooking(requestBody);
 
-        String responseBody = response.asString();
+            assertThat(response.getStatusCode()).isEqualTo(200);
 
-        assertThat(responseBody).isNotNull();
-        createNewBooking = objectMapper.readValue(responseBody, CreateNewBooking.class);
-        assertEquals(createNewBooking.getBooking().getFirstname(), booking.getFirstname());
-        assertEquals(createNewBooking.getBooking().getLastname(), booking.getLastname());
-        assertEquals(createNewBooking.getBooking().getTotalprice(), booking.getTotalprice());
-        assertEquals(createNewBooking.getBooking().isDepositpaid(), booking.isDepositpaid());
-        assertEquals(createNewBooking.getBooking().getBookingdates().getCheckin(), booking.getBookingdates().getCheckin());
-        assertEquals(createNewBooking.getBooking().getBookingdates().getCheckout(), booking.getBookingdates().getCheckout());
-        assertEquals(createNewBooking.getBooking().getAdditionalneeds(), booking.getAdditionalneeds());
+            String responseBody = response.asString();
+
+            assertThat(responseBody).isNotNull();
+            createNewBooking = objectMapper.readValue(responseBody, CreateNewBooking.class);
+            assertEquals(createNewBooking.getBooking().getFirstname(), booking.getFirstname());
+            assertEquals(createNewBooking.getBooking().getLastname(), booking.getLastname());
+            assertEquals(createNewBooking.getBooking().getTotalprice(), booking.getTotalprice());
+            assertEquals(createNewBooking.getBooking().isDepositpaid(), booking.isDepositpaid());
+            assertEquals(createNewBooking.getBooking().getBookingdates().getCheckin(), booking.getBookingdates().getCheckin());
+            assertEquals(createNewBooking.getBooking().getBookingdates().getCheckout(), booking.getBookingdates().getCheckout());
+            assertEquals(createNewBooking.getBooking().getAdditionalneeds(), booking.getAdditionalneeds());
+        });
     }
 
     @AfterEach
     public void tearDown() {
-        apiClient.createToken("admin","password123");
+        apiClient.createToken("admin", "password123");
         apiClient.deleteBooking(createNewBooking.getBookingid());
 
         assertThat(apiClient.getBookingAfterDeleteById(createNewBooking.getBookingid()).getStatusCode()).isEqualTo(404);

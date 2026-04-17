@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static io.qameta.allure.Allure.step;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DeleteBookingTest {
@@ -21,7 +22,7 @@ public class DeleteBookingTest {
     public void setup() {
         apiClient = new APIClient();
         objectMapper = new ObjectMapper();
-        apiClient.createToken("admin","password123");
+        apiClient.createToken("admin", "password123");
     }
 
     public int getRandomNumber(int max) {
@@ -32,22 +33,29 @@ public class DeleteBookingTest {
     @Test
     public void testDeleteBooking() throws Exception {
         //Делаем запрос и записываем в переменную ответ
-        Response getBookingId = apiClient.getBooking();
+        step("Проверка что статус код удаления == 201", () -> {
+            Response getBookingId = apiClient.getBooking();
 
-        //Десериализуем JSON
-        String responseBody = getBookingId.getBody().asString();
-        List<Booking> bookings = objectMapper.readValue(responseBody, new TypeReference<>() {});
+            //Десериализуем JSON
+            String responseBody = getBookingId.getBody().asString();
+            List<Booking> bookings = objectMapper.readValue(responseBody, new TypeReference<>() {
+            });
 
-        //Проверяем что ответ не пустой
-        assertThat(bookings).isNotEmpty();
+            //Проверяем что ответ не пустой
+            assertThat(bookings).isNotEmpty();
 
-        //Получаем рандомный id по размеру ответ
-        int bookingExactId = getRandomNumber(bookings.size() -1);
+            //Получаем рандомный id по размеру ответ
+            int bookingExactId = getRandomNumber(bookings.size() - 1);
 
-        Response response = apiClient.deleteBooking(bookingExactId);
-        assertThat(response.getStatusCode()).isEqualTo(201);
+            Response response = apiClient.deleteBooking(bookingExactId);
+            assertThat(response.getStatusCode()).isEqualTo(201);
 
-        Response getDeletedBooking = apiClient.getBookingAfterDeleteById(bookingExactId);
-        assertThat(getDeletedBooking.getStatusCode()).isEqualTo(404);
+            step("Проверка что удаленный Booking не находится", () -> {
+
+                        Response getDeletedBooking = apiClient.getBookingAfterDeleteById(bookingExactId);
+                        assertThat(getDeletedBooking.getStatusCode()).isEqualTo(404);
+            });
+        });
+
     }
 }

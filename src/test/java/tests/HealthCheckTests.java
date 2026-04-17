@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static io.qameta.allure.Allure.step;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -18,7 +19,9 @@ public class HealthCheckTests {
 
     @Test
     public void testPing() {
-        Response response = apiClient.ping();
-        assertThat(response.getStatusCode()).isEqualTo(201);
+        step("Проверка соединения",()->{
+            Response response = apiClient.ping();
+            assertThat(response.getStatusCode()).isEqualTo(201);
+        });
     }
 }
